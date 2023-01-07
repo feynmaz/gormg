@@ -94,7 +94,7 @@ func UpdatePost(ctx *gin.Context) {
 	result = initializers.DB.Model(&post).Updates(
 		models.Post{
 			Title: body.Title,
-            Body:  body.Body,
+			Body:  body.Body,
 		},
 	)
 	if result.Error != nil {
@@ -106,4 +106,23 @@ func UpdatePost(ctx *gin.Context) {
 	ctx.JSON(200, gin.H{
 		"post": post,
 	})
+}
+
+func DeletePost(ctx *gin.Context) {
+	// Get id off url
+	id := ctx.Param("id")
+
+	// Delete post
+	result := initializers.DB.Delete(&models.Post{}, id)
+
+	if result.Error != nil {
+		ctx.Status(400)
+		return
+	}
+
+	// Respond
+	ctx.JSON(200, gin.H{
+		"deleted": id,
+	})
+
 }

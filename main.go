@@ -26,6 +26,9 @@ func main() {
 	r.GET("/posts", controllers.GetPosts)
 	r.GET("/posts/:id", controllers.GetPost)
 
+	r.DELETE("/posts/:id", controllers.DeletePost)
+
+
 
 	r.Run()
 }
