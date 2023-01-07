@@ -44,7 +44,28 @@ func GetPosts(ctx *gin.Context) {
 		return
 	}
 
+	// respond
 	ctx.JSON(200, gin.H{
 		"posts": posts,
+	})
+}
+
+func GetPost(ctx *gin.Context) {
+	// Get id off url
+	id := ctx.Param("id")
+
+	// Get post
+	var post models.Post
+	result := initializers.DB.First(&post, id)
+
+	if result.Error != nil {
+		ctx.Status(400)
+		return
+	}
+
+	// respond
+	ctx.JSON(200, gin.H{
+		"id":   id,
+		"post": post,
 	})
 }
