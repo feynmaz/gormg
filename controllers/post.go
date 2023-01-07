@@ -69,3 +69,41 @@ func GetPost(ctx *gin.Context) {
 		"post": post,
 	})
 }
+
+func UpdatePost(ctx *gin.Context) {
+	// Get id off url
+	id := ctx.Param("id")
+
+	// Get the data off request body
+	var body struct {
+		Title string
+		Body  string
+	}
+	ctx.Bind(&body)
+
+	// Find post to update
+	var post models.Post
+	result := initializers.DB.First(&post, id)
+
+	if result.Error != nil {
+		ctx.Status(400)
+		return
+	}
+
+	// Update it
+	result = initializers.DB.Model(&post).Updates(
+		models.Post{
+			Title: body.Title,
+            Body:  body.Body,
+		},
+	)
+	if result.Error != nil {
+		ctx.Status(400)
+		return
+	}
+
+	// respond
+	ctx.JSON(200, gin.H{
+		"post": post,
+	})
+}

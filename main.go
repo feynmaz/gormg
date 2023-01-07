@@ -21,6 +21,8 @@ func main() {
 	})
 
 	r.POST("/posts", controllers.CreatePost)
+	r.PUT("/posts/:id", controllers.UpdatePost)
+
 	r.GET("/posts", controllers.GetPosts)
 	r.GET("/posts/:id", controllers.GetPost)
 
