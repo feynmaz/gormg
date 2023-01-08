@@ -1,9 +1,12 @@
 package main
 
 import (
+	"net/http"
+	"os"
+
 	"github.com/feynmaz/gormg/controllers"
 	"github.com/feynmaz/gormg/initializers"
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 )
 
 func init() {
@@ -12,23 +15,19 @@ func init() {
 }
 
 func main() {
-	r := gin.Default()
+	e := echo.New()
 
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
+	e.GET("/ping", func(ctx echo.Context) error {
+		return ctx.String(http.StatusOK, "pong")
 	})
 
-	r.POST("/posts", controllers.CreatePost)
-	r.PUT("/posts/:id", controllers.UpdatePost)
+	e.POST("/posts", controllers.CreatePost)
+	e.PUT("/posts/:id", controllers.UpdatePost)
 
-	r.GET("/posts", controllers.GetPosts)
-	r.GET("/posts/:id", controllers.GetPost)
+	e.GET("/posts", controllers.GetPosts)
+	e.GET("/posts/:id", controllers.GetPost)
 
-	r.DELETE("/posts/:id", controllers.DeletePost)
+	e.DELETE("/posts/:id", controllers.DeletePost)
 
-
-
-	r.Run()
+	e.Logger.Fatal(e.Start(":" + os.Getenv("PORT")))
 }

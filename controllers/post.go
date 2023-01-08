@@ -1,12 +1,14 @@
 package controllers
 
 import (
+	"net/http"
+
 	"github.com/feynmaz/gormg/initializers"
 	"github.com/feynmaz/gormg/models"
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 )
 
-func CreatePost(ctx *gin.Context) {
+func CreatePost(ctx echo.Context) error {
 	// Get data off request body
 	var body struct {
 		Title string
@@ -24,33 +26,33 @@ func CreatePost(ctx *gin.Context) {
 	result := initializers.DB.Create(&post)
 
 	if result.Error != nil {
-		ctx.Status(400)
-		return
+		ctx.NoContent(http.StatusBadRequest)
+		return nil
 	}
 
 	// Return it
-	ctx.JSON(200, gin.H{
+	return ctx.JSON(http.StatusOK, map[string]any{
 		"post": post,
 	})
 }
 
-func GetPosts(ctx *gin.Context) {
+func GetPosts(ctx echo.Context) error {
 	// Get posts
 	var posts []models.Post
 	result := initializers.DB.Find(&posts)
 
 	if result.Error != nil {
-		ctx.Status(400)
-		return
+		ctx.NoContent(http.StatusBadRequest)
+		return nil
 	}
 
 	// respond
-	ctx.JSON(200, gin.H{
+	return ctx.JSON(200, map[string]any{
 		"posts": posts,
 	})
 }
 
-func GetPost(ctx *gin.Context) {
+func GetPost(ctx echo.Context) error {
 	// Get id off url
 	id := ctx.Param("id")
 
@@ -59,18 +61,18 @@ func GetPost(ctx *gin.Context) {
 	result := initializers.DB.First(&post, id)
 
 	if result.Error != nil {
-		ctx.Status(400)
-		return
+		ctx.NoContent(http.StatusBadRequest)
+		return nil
 	}
 
 	// respond
-	ctx.JSON(200, gin.H{
+	return ctx.JSON(200, map[string]any{
 		"id":   id,
 		"post": post,
 	})
 }
 
-func UpdatePost(ctx *gin.Context) {
+func UpdatePost(ctx echo.Context) error {
 	// Get id off url
 	id := ctx.Param("id")
 
@@ -86,8 +88,8 @@ func UpdatePost(ctx *gin.Context) {
 	result := initializers.DB.First(&post, id)
 
 	if result.Error != nil {
-		ctx.Status(400)
-		return
+		ctx.NoContent(http.StatusBadRequest)
+		return nil
 	}
 
 	// Update it
@@ -98,17 +100,17 @@ func UpdatePost(ctx *gin.Context) {
 		},
 	)
 	if result.Error != nil {
-		ctx.Status(400)
-		return
+		ctx.NoContent(http.StatusBadRequest)
+		return nil
 	}
 
 	// respond
-	ctx.JSON(200, gin.H{
+	return ctx.JSON(200, map[string]any{
 		"post": post,
 	})
 }
 
-func DeletePost(ctx *gin.Context) {
+func DeletePost(ctx echo.Context) error {
 	// Get id off url
 	id := ctx.Param("id")
 
@@ -116,13 +118,12 @@ func DeletePost(ctx *gin.Context) {
 	result := initializers.DB.Delete(&models.Post{}, id)
 
 	if result.Error != nil {
-		ctx.Status(400)
-		return
+		ctx.NoContent(http.StatusBadRequest)
+		return nil
 	}
 
 	// Respond
-	ctx.JSON(200, gin.H{
+	return ctx.JSON(200, map[string]any{
 		"deleted": id,
 	})
-
 }
